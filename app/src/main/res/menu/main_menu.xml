@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/item_notes"
+        android:title="@string/note"
+        android:icon="@drawable/icon_note"
+        />
+    <item
+        android:id="@+id/item_reminder"
+        android:title="@string/reminders"
+        android:icon="@drawable/icon_reminder"
+        />
+
+    <item
+        android:title="Option">
+        <menu>
+            <item
+                android:id="@+id/item_archive"
+                android:title="@string/archive"
+                android:icon="@drawable/icon_achive"
+                />
+            <item
+                android:id="@+id/item_deleted"
+                android:title="@string/deleted"
+                android:icon="@drawable/icon_delete"
+                />
+            <item
+                android:id="@+id/item_setting"
+                android:title="@string/setting"
+                android:icon="@drawable/icon_setting"
+                />
+            <item
+                android:id="@+id/item_help"
+                android:title="@string/help_feedback"
+                android:icon="@drawable/icon_question"
+                />
+        </menu>
+    </item>
+</menu>

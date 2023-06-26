@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Notezz</string>
+    <string name="help_feedback"><![CDATA[Help & feedback]]></string>
+    <string name="archive">Archive</string>
+    <string name="deleted">Deleted</string>
+    <string name="setting">Setting</string>
+    <string name="reminders">Reminders</string>
+    <string name="note">Note</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+</resources>
