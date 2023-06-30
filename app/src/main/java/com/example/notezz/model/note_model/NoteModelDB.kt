@@ -6,13 +6,13 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "notes_table")
 data class NoteModelDB(
     @PrimaryKey(autoGenerate = true)
-    val noteId: Int,
-    val id: String,
-    val userId: String,
-    val name: String,
-    val text: String,
-    val color: String,
-    val isDeleted: Boolean,
-    val isCreated: Boolean,
-    val isUpdated: Boolean,
+    var noteId: Int,
+    var id: String,
+    var userId: String,
+    var name: String,
+    var text: String,
+    var color: String,
+    var isDeleted: Boolean,
+    var isCreated: Boolean,
+    var isUpdated: Boolean,
 )

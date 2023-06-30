@@ -64,4 +64,6 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     //Swipe refresh layout
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
+    //swipe decorator
+    implementation 'it.xabaras.android:recyclerview-swipedecorator:1.4'
 }

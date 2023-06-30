@@ -22,6 +22,25 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
     fun createNote(noteName: String,noteText: String,color: String = "#FFFFFF"){
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.createNote(noteName, noteText, color)
+            noteRepository.getAllNote()
         }
     }
+    fun updateNote(note: NoteModelDB){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.updateNote(note)
+            noteRepository.getAllNote()
+        }
+    }
+    fun archiveNote(note: NoteModelDB){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.archiveNote(note)
+            noteRepository.getAllNote()
+        }
+    }
+    fun deleteNote(note: NoteModelDB){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.deleteNote(note)
+        }
+    }
+
 }

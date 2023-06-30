@@ -1,10 +1,14 @@
 package com.example.notezz
 
+import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -14,16 +18,21 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.notezz.adapter.MainAdapter
+import com.example.notezz.callback.ItemClickListener
+import com.example.notezz.callback.SwipeToDeleteCallback
 import com.example.notezz.databinding.ActivityMainBinding
+import com.example.notezz.model.note_model.NoteModelDB
+import com.example.notezz.utils.CreateVibrationEffect
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
 import com.google.android.material.navigation.NavigationView
 
-class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener,ItemClickListener {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView : NavigationView
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
@@ -50,13 +59,12 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         navigationView.setNavigationItemSelectedListener(this)
 
         handleOnClickEvent()
-        initRecyclerView()
 
         val noteRepository = (application as NotezzApplication).noteRepository
         noteViewModel = ViewModelProvider(this, NoteViewModelFactory(noteRepository)).get(
             NoteViewModel::class.java)
         noteViewModel.allNotes.observe(this, Observer {
-            mainAdapter.submitList(it.reversed())
+            mainAdapter.submitList(applyNoteFilter(it))
         })
         swipeRefreshLayout.setOnRefreshListener {
             Handler(Looper.getMainLooper()).postDelayed(Runnable {
@@ -64,13 +72,23 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
                 swipeRefreshLayout.isRefreshing = false
             },1000)
         }
+        initRecyclerView()
+    }
+
+    private fun applyNoteFilter(list:List<NoteModelDB>):List<NoteModelDB> {
+        val listFiltered = list.filter { !it.isDeleted }
+        return listFiltered.reversed()
     }
 
     private fun initRecyclerView() {
-        mainAdapter = MainAdapter()
+        mainAdapter = MainAdapter(this)
         recyclerViewMain.layoutManager = LinearLayoutManager(this)
         recyclerViewMain.setHasFixedSize(true)
         recyclerViewMain.adapter = mainAdapter
+        // For swipe effect
+        val swipeToDeleteCallback = SwipeToDeleteCallback(mainAdapter,noteViewModel,this)
+        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerViewMain)
     }
 
     private fun handleOnClickEvent() {
@@ -104,5 +122,14 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     override fun onStart() {
         super.onStart()
         noteViewModel.getAllNote()
+    }
+
+    override fun onItemClick(position: Int) {
+        Toast.makeText(this,""+position+" Clicked",Toast.LENGTH_SHORT).show();
+    }
+
+    override fun onItemLongClick(position: Int) {
+        CreateVibrationEffect(this)
+
     }
 }

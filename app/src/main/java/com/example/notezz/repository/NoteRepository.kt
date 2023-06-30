@@ -28,4 +28,16 @@ class NoteRepository(
         noteDatabase.NoteDao().addNote(note)
     }
 
+    suspend fun updateNote(note: NoteModelDB){
+        note.isUpdated = true
+        noteDatabase.NoteDao().update(note)
+    }
+    suspend fun archiveNote(note: NoteModelDB){
+        note.isDeleted = true
+        noteDatabase.NoteDao().update(note)
+    }
+    suspend fun deleteNote(note: NoteModelDB){
+        noteDatabase.NoteDao().update(note)
+    }
+
 }
