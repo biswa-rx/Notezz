@@ -6,12 +6,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.notezz.api.AuthApiService
-import com.example.notezz.model.AuthorizationRequest
-import com.example.notezz.model.ErrorResponse
-import com.example.notezz.model.LoginRequest
-import com.example.notezz.model.AuthorizationResponse
-import com.example.notezz.model.ErrorData
-import com.example.notezz.model.SignupRequest
+import com.example.notezz.model.auth_model.AuthorizationRequest
+import com.example.notezz.model.auth_model.ErrorResponse
+import com.example.notezz.model.auth_model.LoginRequest
+import com.example.notezz.model.auth_model.AuthorizationResponse
+import com.example.notezz.model.auth_model.ErrorData
+import com.example.notezz.model.auth_model.SignupRequest
 import com.google.gson.Gson
 
 class AuthRepository(
@@ -43,7 +43,7 @@ class AuthRepository(
                 }
             }else {
                 val gson = Gson();
-                val errorResponse = gson.fromJson(response.errorBody()!!.string(),ErrorResponse::class.java);
+                val errorResponse = gson.fromJson(response.errorBody()!!.string(), ErrorResponse::class.java);
                 _errorMessage.postValue(errorResponse);
             }
         } catch (e: Exception) {
@@ -65,7 +65,7 @@ class AuthRepository(
                 }
             } else {
                 val gson = Gson();
-                val errorResponse = gson.fromJson(response.errorBody()!!.string(),ErrorResponse::class.java);
+                val errorResponse = gson.fromJson(response.errorBody()!!.string(), ErrorResponse::class.java);
                 _errorMessage.postValue(errorResponse);
             }
         } catch (e: Exception) {
@@ -94,7 +94,7 @@ class AuthRepository(
                 }
             } else {
                 val gson = Gson();
-                val errorResponse = gson.fromJson(response.errorBody()!!.string(),ErrorResponse::class.java);
+                val errorResponse = gson.fromJson(response.errorBody()!!.string(), ErrorResponse::class.java);
                 _errorMessage.postValue(errorResponse);
             }
         } catch (e: Exception) {

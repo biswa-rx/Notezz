@@ -3,8 +3,8 @@ package com.example.notezz.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.notezz.model.ErrorResponse
-import com.example.notezz.model.AuthorizationResponse
+import com.example.notezz.model.auth_model.ErrorResponse
+import com.example.notezz.model.auth_model.AuthorizationResponse
 import com.example.notezz.repository.AuthRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

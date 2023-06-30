@@ -1,9 +1,9 @@
 package com.example.notezz.api
 
-import com.example.notezz.model.AuthorizationRequest
-import com.example.notezz.model.LoginRequest
-import com.example.notezz.model.AuthorizationResponse
-import com.example.notezz.model.SignupRequest
+import com.example.notezz.model.auth_model.AuthorizationRequest
+import com.example.notezz.model.auth_model.LoginRequest
+import com.example.notezz.model.auth_model.AuthorizationResponse
+import com.example.notezz.model.auth_model.SignupRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST

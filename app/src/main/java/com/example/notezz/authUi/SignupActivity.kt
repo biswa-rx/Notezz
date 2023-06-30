@@ -27,8 +27,8 @@ class SignupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_signup)
-        val authRepository = (application as NotezzApplication).authRepository
 
+        val authRepository = (application as NotezzApplication).authRepository
         authViewModel = ViewModelProvider(this, AuthViewModelFactory(authRepository)).get(AuthViewModel::class.java)
 
         authViewModel.accessCode.observe(this, Observer {

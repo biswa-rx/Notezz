@@ -1,4 +1,4 @@
-package com.example.notezz.model
+package com.example.notezz.model.auth_model
 
 data class SignupRequest(
     val name: String,
