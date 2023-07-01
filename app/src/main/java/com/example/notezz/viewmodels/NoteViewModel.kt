@@ -31,15 +31,27 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
             noteRepository.getAllNote()
         }
     }
-    fun archiveNote(note: NoteModelDB){
+    fun deletePendingNote(note: NoteModelDB){
         viewModelScope.launch(Dispatchers.IO) {
-            noteRepository.archiveNote(note)
+            noteRepository.deletePendingNote(note)
             noteRepository.getAllNote()
         }
     }
     fun deleteNote(note: NoteModelDB){
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.deleteNote(note)
+        }
+    }
+
+    fun syncAllNote(){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.syncAllData()
+        }
+    }
+
+    fun syncNote(){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.syncData()
         }
     }
 

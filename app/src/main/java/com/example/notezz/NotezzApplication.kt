@@ -9,6 +9,7 @@ import com.example.notezz.api.RetrofitHelper
 import com.example.notezz.db.NoteDatabase
 import com.example.notezz.repository.AuthRepository
 import com.example.notezz.repository.NoteRepository
+import com.example.notezz.utils.AccessTokenManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -16,13 +17,15 @@ import kotlinx.coroutines.GlobalScope
 class NotezzApplication : Application() {
     lateinit var authRepository: AuthRepository;
     lateinit var noteRepository: NoteRepository;
+    lateinit var sharedPreferences: SharedPreferences
     override fun onCreate() {
         super.onCreate()
         initialize()
+        AccessTokenManager.setRefreshToken(sharedPreferences.getString("refresh-token",null).toString())
     }
     private fun initialize() {
         val authApiService = RetrofitHelper.getInstance().create(AuthApiService::class.java)
-        val sharedPreferences: SharedPreferences = applicationContext.getSharedPreferences("AUTH_PREFERENCES", Context.MODE_PRIVATE)
+        sharedPreferences = applicationContext.getSharedPreferences("AUTH_PREFERENCES", Context.MODE_PRIVATE)
         authRepository = AuthRepository(authApiService, sharedPreferences, applicationContext)
 
         val noteApiService = RetrofitHelper.getInstance().create(NoteApiService::class.java)

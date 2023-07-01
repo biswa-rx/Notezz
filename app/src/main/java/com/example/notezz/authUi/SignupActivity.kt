@@ -16,6 +16,7 @@ import com.example.notezz.NotezzApplication
 import com.example.notezz.R
 import com.example.notezz.databinding.ActivityMainBinding
 import com.example.notezz.databinding.ActivitySignupBinding
+import com.example.notezz.utils.AccessTokenManager
 import com.example.notezz.utils.CustomToast
 import com.example.notezz.viewmodels.AuthViewModel
 import com.example.notezz.viewmodels.AuthViewModelFactory
@@ -33,6 +34,7 @@ class SignupActivity : AppCompatActivity() {
 
         authViewModel.accessCode.observe(this, Observer {
             gotoMainActivity()
+            AccessTokenManager.setAccessToken(it.ACCESS_TOKEN)
             Log.i(TAG, it.ACCESS_TOKEN+"\n"+it.REFRESH_TOKEN)
         })
         authViewModel.errorMessage.observe(this, Observer {

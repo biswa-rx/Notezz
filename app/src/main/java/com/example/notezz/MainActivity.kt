@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.notezz.adapter.MainAdapter
 import com.example.notezz.callback.ItemClickListener
@@ -67,6 +68,7 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             mainAdapter.submitList(applyNoteFilter(it))
         })
         swipeRefreshLayout.setOnRefreshListener {
+            noteViewModel.syncNote()
             Handler(Looper.getMainLooper()).postDelayed(Runnable {
                 Toast.makeText(this,"Refreshed",Toast.LENGTH_SHORT).show();
                 swipeRefreshLayout.isRefreshing = false
@@ -82,7 +84,9 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
 
     private fun initRecyclerView() {
         mainAdapter = MainAdapter(this)
-        recyclerViewMain.layoutManager = LinearLayoutManager(this)
+//        val layoutManager = LinearLayoutManager(this)
+        val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        recyclerViewMain.layoutManager = layoutManager
         recyclerViewMain.setHasFixedSize(true)
         recyclerViewMain.adapter = mainAdapter
         // For swipe effect
@@ -125,7 +129,17 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     }
 
     override fun onItemClick(position: Int) {
-        Toast.makeText(this,""+position+" Clicked",Toast.LENGTH_SHORT).show();
+        val note = mainAdapter.currentList.get(position)
+
+        val intent = Intent(this,UpdateNoteActivity::class.java)
+        intent.putExtra("noteId",note.noteId)
+        intent.putExtra("id",note.id)
+        intent.putExtra("userId",note.userId)
+        intent.putExtra("noteTitle",note.name)
+        intent.putExtra("noteText",note.text)
+        intent.putExtra("noteColor",note.color)
+        intent.putExtra("isCreated",note.isCreated);
+        startActivity(intent)
     }
 
     override fun onItemLongClick(position: Int) {

@@ -11,7 +11,7 @@ data class NoteModelDB(
     var userId: String,
     var name: String,
     var text: String,
-    var color: String,
+    var color: String = "#FFFF00",
     var isDeleted: Boolean,
     var isCreated: Boolean,
     var isUpdated: Boolean,

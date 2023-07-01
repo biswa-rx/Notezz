@@ -76,7 +76,7 @@ class AuthRepository(
     suspend fun authorizeUser() {
         try {
             val refreshToken = sharedPreferences.getString("refresh-token",null);
-            if(refreshToken == null){
+            if(refreshToken == null) {
                 val errorResponse = ErrorResponse(ErrorData(401,"Please resister your self"))
                 _errorMessage.postValue(errorResponse)
                 return
@@ -95,7 +95,11 @@ class AuthRepository(
             } else {
                 val gson = Gson();
                 val errorResponse = gson.fromJson(response.errorBody()!!.string(), ErrorResponse::class.java);
+                errorResponse.error.message += "\nAnother device login detected"
                 _errorMessage.postValue(errorResponse);
+                val editor = sharedPreferences.edit()
+                editor.putString("refresh-token", null)
+                editor.apply()
             }
         } catch (e: Exception) {
             Log.e(TAG,(e.message ?: "Login failed"))

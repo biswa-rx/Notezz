@@ -13,7 +13,9 @@ import com.example.notezz.MainActivity
 import com.example.notezz.NotezzApplication
 import com.example.notezz.R
 import com.example.notezz.databinding.ActivityWelcomeBinding
+import com.example.notezz.utils.AccessTokenManager
 import com.example.notezz.utils.CustomToast
+import com.example.notezz.utils.NetworkUtils
 import com.example.notezz.viewmodels.AuthViewModel
 import com.example.notezz.viewmodels.AuthViewModelFactory
 
@@ -32,11 +34,20 @@ class WelcomeActivity : AppCompatActivity() {
 
         authViewModel.accessCode.observe(this, Observer {
             gotoMainActivity()
+            AccessTokenManager.setAccessToken(it.ACCESS_TOKEN)
             Log.i(TAG, it.ACCESS_TOKEN+"\n"+it.REFRESH_TOKEN)
         })
         authViewModel.errorMessage.observe(this, Observer {
             CustomToast.makeToast(this,it.error.message)
         })
+        if(!NetworkUtils.isInternetAvailable(applicationContext)) {
+            if(AccessTokenManager.getRefreshToken() != "null"){
+                CustomToast.makeToast(this,"You are Offline\nSync failed")
+                gotoMainActivity()
+            } else {
+                CustomToast.makeToast(this,"You are Offline")
+            }
+        }
         initOnClickEvent()
     }
 

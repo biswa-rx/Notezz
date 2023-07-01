@@ -13,9 +13,12 @@ import com.example.notezz.MainActivity
 import com.example.notezz.NotezzApplication
 import com.example.notezz.R
 import com.example.notezz.databinding.ActivityLoginBinding
+import com.example.notezz.utils.AccessTokenManager
 import com.example.notezz.utils.CustomToast
 import com.example.notezz.viewmodels.AuthViewModel
 import com.example.notezz.viewmodels.AuthViewModelFactory
+import com.example.notezz.viewmodels.NoteViewModel
+import com.example.notezz.viewmodels.NoteViewModelFactory
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding:ActivityLoginBinding;
@@ -32,6 +35,9 @@ class LoginActivity : AppCompatActivity() {
 
         authViewModel.accessCode.observe(this, Observer {
             gotoMainActivity()
+            AccessTokenManager.setAccessToken(it.ACCESS_TOKEN)
+            ViewModelProvider(this, NoteViewModelFactory((application as NotezzApplication).noteRepository)).get(
+                NoteViewModel::class.java).syncAllNote()
             Log.i(TAG, it.ACCESS_TOKEN+"\n"+it.REFRESH_TOKEN)
         })
         authViewModel.errorMessage.observe(this, Observer {

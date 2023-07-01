@@ -27,7 +27,7 @@ class SwipeToDeleteCallback(private val adapter: MainAdapter,private val noteVie
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         val position = viewHolder.adapterPosition
         val note = adapter.currentList.get(position)
-        noteViewModel.archiveNote(note)
+        noteViewModel.deletePendingNote(note)
     }
 
     override fun onChildDraw(
