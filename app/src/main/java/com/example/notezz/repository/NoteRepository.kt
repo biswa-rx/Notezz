@@ -10,6 +10,7 @@ import com.example.notezz.NotezzApplication
 import com.example.notezz.api.NoteApiService
 import com.example.notezz.db.NoteDatabase
 import com.example.notezz.model.note_model.AccessTokenBody
+import com.example.notezz.model.note_model.ArchiveModelDB
 import com.example.notezz.model.note_model.CreateNoteModel
 import com.example.notezz.model.note_model.NoteModelDB
 import com.example.notezz.model.note_model.UpdateNoteModel
@@ -27,8 +28,13 @@ class NoteRepository(
     private val TAG = "NoteRepository"
     private val _notesLiveData = MutableLiveData<List<NoteModelDB>>();
 
+    private val _archiveNotesLiveData = MutableLiveData<List<ArchiveModelDB>>();
+
     val allNotes: LiveData<List<NoteModelDB>>
         get() = _notesLiveData
+
+    val allArchiveNotes: LiveData<List<ArchiveModelDB>>
+        get() = _archiveNotesLiveData
 
     suspend fun getAllNote() {
         val notes = noteDatabase.NoteDao().getNotes()
@@ -51,7 +57,7 @@ class NoteRepository(
     }
 
     suspend fun deleteNote(note: NoteModelDB) {
-        noteDatabase.NoteDao().update(note)
+        noteDatabase.NoteDao().delete(note)
     }
 
     //when ever user welcome as Login
@@ -60,9 +66,8 @@ class NoteRepository(
             if (!NetworkUtils.isInternetAvailable(applicationContext)) {
                 return
             }else {
-                if (AccessTokenManager.getAccessToken() == null) {
+                if (AccessTokenManager.getAccessToken().isEmpty()) {
                     (applicationContext as NotezzApplication).authRepository.authorizeUser()
-                    return
                 }
             }
             val response =
@@ -72,7 +77,7 @@ class NoteRepository(
             if (response.isSuccessful) {
                 val notesResponse = response.body()
                 if (notesResponse != null) {
-                    CustomToast.makeToast(applicationContext, notesResponse.toString())
+//                    CustomToast.makeToast(applicationContext, notesResponse.toString())
                     noteDatabase.NoteDao().clearTable()
                     val noteModelDBList = notesResponse.map { it ->
                         NoteModelDB(
@@ -101,9 +106,8 @@ class NoteRepository(
         if (!NetworkUtils.isInternetAvailable(applicationContext)) {
             return
         }
-        if (AccessTokenManager.getAccessToken() == null) {
+        if (AccessTokenManager.getAccessToken().isEmpty()) {
             (applicationContext as NotezzApplication).authRepository.authorizeUser()
-            return
         }
         val noteModelDbList = noteDatabase.NoteDao().getNotes()
         for (noteModelDB in noteModelDbList) {
@@ -170,5 +174,30 @@ class NoteRepository(
                 }
             }
         }
+    }
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //Archive note
+    suspend fun getAllArchiveNote() {
+        val notes = noteDatabase.ArchiveDao().getNotes()
+        _archiveNotesLiveData.postValue(notes)
+    }
+
+    suspend fun createArchiveNote(note: ArchiveModelDB) {
+        noteDatabase.ArchiveDao().addNote(note)
+    }
+
+    suspend fun updateArchiveNote(note: ArchiveModelDB) {
+        noteDatabase.ArchiveDao().update(note)
+    }
+
+    suspend fun temporaryDeleteArchiveNote(note: ArchiveModelDB) {
+        note.isDeleted = true
+        noteDatabase.ArchiveDao().update(note)
+        println("Temporary deleted called")
+    }
+
+    suspend fun deleteArchiveNote(note: ArchiveModelDB) {
+        noteDatabase.ArchiveDao().delete(note)
+        println("permanent deleted called")
     }
 }

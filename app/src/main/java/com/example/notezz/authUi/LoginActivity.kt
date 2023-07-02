@@ -15,6 +15,7 @@ import com.example.notezz.R
 import com.example.notezz.databinding.ActivityLoginBinding
 import com.example.notezz.utils.AccessTokenManager
 import com.example.notezz.utils.CustomToast
+import com.example.notezz.utils.JwtDataExtracter
 import com.example.notezz.viewmodels.AuthViewModel
 import com.example.notezz.viewmodels.AuthViewModelFactory
 import com.example.notezz.viewmodels.NoteViewModel
@@ -34,10 +35,13 @@ class LoginActivity : AppCompatActivity() {
             AuthViewModel::class.java)
 
         authViewModel.accessCode.observe(this, Observer {
-            ViewModelProvider(this, NoteViewModelFactory((application as NotezzApplication).noteRepository)).get(
-                NoteViewModel::class.java).syncAllNote()
-            gotoMainActivity()
-            Log.i(TAG, it.ACCESS_TOKEN+"\n"+it.REFRESH_TOKEN)
+            if (AccessTokenManager.getRefreshToken().toString().isNotEmpty()) {
+                ViewModelProvider(this, NoteViewModelFactory((application as NotezzApplication).noteRepository)).get(
+                    NoteViewModel::class.java).syncAllNote()
+                gotoMainActivity()
+            }
+                Log.i(TAG, it.ACCESS_TOKEN+"\n"+it.REFRESH_TOKEN)
+
         })
         authViewModel.errorMessage.observe(this, Observer {
             CustomToast.makeToast(this,it.error.message)

@@ -1,7 +1,6 @@
 package com.example.notezz
 
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.view.Menu
@@ -10,22 +9,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.notezz.databinding.ActivityAddNoteBinding
-import com.example.notezz.model.note_model.NoteModelDB
+import com.example.notezz.model.note_model.ArchiveModelDB
 import com.example.notezz.utils.CustomToast
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
 
-class UpdateNoteActivity : AppCompatActivity() {
+class UpdateArchiveNote : AppCompatActivity() {
     private lateinit var binding: ActivityAddNoteBinding
     private lateinit var noteViewModel: NoteViewModel
     private var noteId: Int = 0
-    private var id: String = ""
-    private var userId: String = ""
     private var noteTitle: String = ""
     private var noteText: String = ""
     private var noteColor: String = "#FFFFFF"
-    private var isCreated: Boolean = false
-    private var isDeletedInUi:Boolean = false
+    private var isDeletedInUi: Boolean = false
     private val TAG = "AddNoteActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,12 +34,9 @@ class UpdateNoteActivity : AppCompatActivity() {
         }
 
         noteId = intent.getIntExtra("noteId",0)
-        id = intent.getStringExtra("id").toString()
-        userId = intent.getStringExtra("userId").toString()
         noteTitle = intent.getStringExtra("noteTitle").toString()
         noteText = intent.getStringExtra("noteText").toString()
         noteColor = intent.getStringExtra("noteColor").toString()
-        isCreated = intent.getBooleanExtra("isCreated",false)
         updateUi()
 
         val noteRepository = (application as NotezzApplication).noteRepository
@@ -89,8 +82,8 @@ class UpdateNoteActivity : AppCompatActivity() {
             CustomToast.makeToast(this,"Empty note discarded")
             return
         }
-        val note = NoteModelDB(noteId,id,userId,noteTitle,noteText,noteColor,isDeletedInUi,isCreated,true)
-        noteViewModel.updateNote(note)
+        val note = ArchiveModelDB(noteId,noteTitle,noteText,noteColor,isDeletedInUi)
+        noteViewModel.updateArchiveNote(note)
     }
 
     override fun onBackPressed() {

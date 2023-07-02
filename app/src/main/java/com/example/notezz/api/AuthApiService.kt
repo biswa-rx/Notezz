@@ -6,6 +6,8 @@ import com.example.notezz.model.auth_model.AuthorizationResponse
 import com.example.notezz.model.auth_model.SignupRequest
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface AuthApiService {
@@ -18,4 +20,6 @@ interface AuthApiService {
     @POST("auth/refresh-token")
     suspend fun authorise(@Body authorizationRequest: AuthorizationRequest): Response<AuthorizationResponse>
 
+    @DELETE("auth/logout")
+    suspend fun logout(@Header("Authorization") token: String):Response<Int>
 }

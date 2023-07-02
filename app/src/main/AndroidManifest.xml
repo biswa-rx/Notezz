@@ -34,6 +34,9 @@
             android:name=".UpdateNoteActivity"
             android:exported="true" />
         <activity
+            android:name=".UpdateArchiveNote"
+            android:exported="true" />
+        <activity
             android:name=".SearchActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />

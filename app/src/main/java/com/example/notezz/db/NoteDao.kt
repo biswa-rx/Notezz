@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.notezz.model.note_model.NoteModelDB
 
@@ -16,6 +17,7 @@ interface NoteDao {
     @Insert
     suspend fun addNote(notes: NoteModelDB)
     @Update
+    @Transaction
     suspend fun update(note: NoteModelDB)
     @Delete
     suspend fun delete(note: NoteModelDB)

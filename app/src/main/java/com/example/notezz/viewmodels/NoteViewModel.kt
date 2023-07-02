@@ -3,6 +3,7 @@ package com.example.notezz.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.notezz.model.note_model.ArchiveModelDB
 import com.example.notezz.model.note_model.NoteModelDB
 import com.example.notezz.repository.NoteRepository
 import kotlinx.coroutines.Dispatchers
@@ -12,6 +13,8 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
     val allNotes: LiveData<List<NoteModelDB>>
         get() = noteRepository.allNotes
 
+    val allArchiveNotes: LiveData<List<ArchiveModelDB>>
+        get() = noteRepository.allArchiveNotes
 
     fun getAllNote() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -52,6 +55,44 @@ class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
     fun syncNote(){
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.syncData()
+        }
+    }
+
+    fun hybridSync(){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.syncData()
+            noteRepository.syncAllData()
+        }
+    }
+
+    fun getAllArchiveNote(){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.getAllArchiveNote()
+        }
+    }
+    fun createArchiveNote(note: ArchiveModelDB){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.createArchiveNote(note)
+            noteRepository.getAllArchiveNote()
+        }
+    }
+
+    fun updateArchiveNote(note: ArchiveModelDB){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.updateArchiveNote(note)
+            noteRepository.getAllArchiveNote()
+        }
+    }
+    fun deleteWaitingArchiveNote(note: ArchiveModelDB){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.temporaryDeleteArchiveNote(note)
+            noteRepository.getAllArchiveNote()
+        }
+    }
+    fun deleteArchiveNote(note: ArchiveModelDB){
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.deleteArchiveNote(note)
+            noteRepository.getAllArchiveNote()
         }
     }
 

@@ -66,4 +66,6 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01"
     //swipe decorator
     implementation 'it.xabaras.android:recyclerview-swipedecorator:1.4'
+    //jwt extract
+    implementation 'com.auth0.android:jwtdecode:2.0.2'
 }

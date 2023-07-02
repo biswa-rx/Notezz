@@ -2,9 +2,12 @@ package com.example.notezz.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.notezz.NotezzApplication
 import com.example.notezz.api.AuthApiService
 import com.example.notezz.model.auth_model.AuthorizationRequest
 import com.example.notezz.model.auth_model.ErrorResponse
@@ -13,6 +16,7 @@ import com.example.notezz.model.auth_model.AuthorizationResponse
 import com.example.notezz.model.auth_model.ErrorData
 import com.example.notezz.model.auth_model.SignupRequest
 import com.example.notezz.utils.AccessTokenManager
+import com.example.notezz.utils.CustomToast
 import com.google.gson.Gson
 
 class AuthRepository(
@@ -42,6 +46,7 @@ class AuthRepository(
                     editor.apply()
                     accessCodeLiveData.postValue(authorizationResponse!!)
                     AccessTokenManager.setAccessToken(authorizationResponse.ACCESS_TOKEN)
+                    AccessTokenManager.setRefreshToken(authorizationResponse.REFRESH_TOKEN)
                 }
             }else {
                 val gson = Gson();
@@ -65,6 +70,7 @@ class AuthRepository(
                     editor.apply()
                     accessCodeLiveData.postValue(authorizationResponse!!)
                     AccessTokenManager.setAccessToken(authorizationResponse.ACCESS_TOKEN)
+                    AccessTokenManager.setRefreshToken(authorizationResponse.REFRESH_TOKEN)
                 }
             } else {
                 val gson = Gson();
@@ -95,6 +101,7 @@ class AuthRepository(
                     editor.apply()
                     accessCodeLiveData.postValue(authorizationResponse!!)
                     AccessTokenManager.setAccessToken(authorizationResponse.ACCESS_TOKEN)
+                    AccessTokenManager.setRefreshToken(authorizationResponse.REFRESH_TOKEN)
                 }
             } else {
                 val gson = Gson();
@@ -107,6 +114,24 @@ class AuthRepository(
             }
         } catch (e: Exception) {
             Log.e(TAG,(e.message ?: "Login failed"))
+        }
+    }
+    suspend fun logoutUser() {
+        val refreshToken = sharedPreferences.getString("refresh-token",null).toString();
+        val response = authApiService.logout("Bearer "+refreshToken)
+        if(response.code() == 204){
+            AccessTokenManager.setAccessToken("")
+            AccessTokenManager.setRefreshToken("")
+            val editor = sharedPreferences.edit()
+            editor.putString("refresh-token", "null")
+            editor.apply()
+            Handler(Looper.getMainLooper()).post(Runnable {
+                CustomToast.makeToast(applicationContext,"You logout successfully")
+            })
+        }else {
+            Handler(Looper.getMainLooper()).post(Runnable {
+                CustomToast.makeToast(applicationContext,"Logout failed")
+            })
         }
     }
 }

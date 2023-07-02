@@ -1,39 +1,43 @@
 package com.example.notezz
 
-import android.content.Context
+import android.app.AlertDialog
 import android.content.Intent
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.util.Log
+import android.os.SystemClock
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.notezz.adapter.MainAdapter
+import com.example.notezz.authUi.LoginActivity
+import com.example.notezz.authUi.WelcomeActivity
 import com.example.notezz.callback.ItemClickListener
 import com.example.notezz.callback.SwipeToDeleteCallback
 import com.example.notezz.databinding.ActivityMainBinding
 import com.example.notezz.model.note_model.NoteModelDB
 import com.example.notezz.utils.CreateVibrationEffect
 import com.example.notezz.utils.CustomToast
+import com.example.notezz.utils.JwtDataExtracter
 import com.example.notezz.utils.NetworkUtils
+import com.example.notezz.viewmodels.AuthViewModel
+import com.example.notezz.viewmodels.AuthViewModelFactory
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
 import com.google.android.material.navigation.NavigationView
+
 
 class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener,ItemClickListener {
     private lateinit var drawerLayout: DrawerLayout
@@ -49,6 +53,7 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
         drawerLayout = binding.drawerLayout
+        mainAdapter = MainAdapter(this)
         navigationView = binding.navView
         toolbar = binding.toolbar
         recyclerViewMain = binding.recyclerNote
@@ -71,7 +76,7 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         })
         swipeRefreshLayout.setOnRefreshListener {
             if (NetworkUtils.isInternetAvailable(applicationContext)) {
-                noteViewModel.syncNote()
+                noteViewModel.hybridSync()
             }else {
                 CustomToast.makeToast(this,"No internet\n Refresh failed")
             }
@@ -87,7 +92,6 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     }
 
     private fun initRecyclerView() {
-        mainAdapter = MainAdapter(this)
 //        val layoutManager = LinearLayoutManager(this)
         val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         recyclerViewMain.layoutManager = layoutManager
@@ -107,6 +111,51 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             val intent = Intent(this,AddNoteActivity::class.java)
             startActivity(intent)
         }
+        binding.profileImage.setOnClickListener {
+            openProfileDialog()
+        }
+    }
+
+    private fun openProfileDialog() {
+        val sharedPreferences = (application as NotezzApplication).sharedPreferences
+        val inflater = LayoutInflater.from(this)
+        val view: View = inflater.inflate(com.example.notezz.R.layout.profile_layout, null)
+        val alertDialog: AlertDialog = AlertDialog.Builder(this)
+            .setView(view)
+            .create()
+
+        val logoutButton: Button = view.findViewById<Button>(com.example.notezz.R.id.pr_bt_logout)
+        val syncButton: Button = view.findViewById<Button>(com.example.notezz.R.id.pr_bt_sync_all)
+        val userIdTextView: TextView = view.findViewById<TextView>(com.example.notezz.R.id.tv_pr_userid)
+        val userNameTextview: TextView = view.findViewById<TextView>(com.example.notezz.R.id.tv_pr_username)
+
+        logoutButton.setOnClickListener {
+            alertDialog.dismiss()
+            noteViewModel.syncNote()
+            ViewModelProvider(this, AuthViewModelFactory((application as NotezzApplication).authRepository)).get(
+                AuthViewModel::class.java).logout()
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                gotoLoginActivity()
+            },500);
+
+        }
+        syncButton.setOnClickListener {
+            Thread(Runnable {
+                noteViewModel.syncNote()
+                SystemClock.sleep(2000)
+                noteViewModel.syncAllNote()
+            }).start()
+            alertDialog.dismiss()
+        }
+        userNameTextview.text = JwtDataExtracter.getName(sharedPreferences.getString("refresh-token",null).toString())
+        userIdTextView.text = "UserId "+JwtDataExtracter.getAudience(sharedPreferences.getString("refresh-token",null).toString())
+
+        alertDialog.show()
+    }
+
+    private fun gotoLoginActivity() {
+        startActivity(Intent(this,LoginActivity::class.java))
+        finish()
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
@@ -152,5 +201,9 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     override fun onItemLongClick(position: Int) {
         CreateVibrationEffect(this)
 
+    }
+
+    override fun onRestart() {
+        super.onRestart()
     }
 }

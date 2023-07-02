@@ -1,14 +1,14 @@
 package com.example.notezz.utils
 
 object AccessTokenManager {
-    private var accessToken: String? = null
-    private var refreshToken: String? = null
+    private var accessToken: String = ""
+    private var refreshToken: String = ""
 
     fun setAccessToken(token: String) {
         accessToken = token
     }
 
-    fun getAccessToken(): String? {
+    fun getAccessToken(): String {
         return accessToken
     }
 
@@ -16,7 +16,7 @@ object AccessTokenManager {
         refreshToken = token
     }
 
-    fun getRefreshToken(): String? {
+    fun getRefreshToken(): String {
         return refreshToken
     }
 }
