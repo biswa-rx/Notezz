@@ -11,6 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.notezz.databinding.ActivityAddNoteBinding
 import com.example.notezz.model.note_model.NoteModelDB
+import com.example.notezz.utils.CustomToast
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
 
@@ -24,6 +25,7 @@ class UpdateNoteActivity : AppCompatActivity() {
     private var noteText: String = ""
     private var noteColor: String = "#FFFFFF"
     private var isCreated: Boolean = false
+    private var isDeletedInUi:Boolean = false
     private val TAG = "AddNoteActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +72,10 @@ class UpdateNoteActivity : AppCompatActivity() {
                 return true
             }
             R.id.item_save -> {
-                updateNote()
+                onBackPressed()
+            }
+            R.id.item_delete -> {
+                isDeletedInUi = true
                 onBackPressed()
             }
         }
@@ -80,7 +85,17 @@ class UpdateNoteActivity : AppCompatActivity() {
     private fun updateNote() {
         val noteTitle = binding.edNoteTitle.text.toString()
         val noteText = binding.edNoteText.text.toString()
-        val note = NoteModelDB(noteId,id,userId,noteTitle,noteText,noteColor,false,isCreated,true)
+        if(noteTitle.trim().isEmpty() and noteText.trim().isEmpty()) {
+            CustomToast.makeToast(this,"Empty note discarded")
+            return
+        }
+        val note = NoteModelDB(noteId,id,userId,noteTitle,noteText,noteColor,isDeletedInUi,isCreated,true)
         noteViewModel.updateNote(note)
+        println("Updating")
+    }
+
+    override fun onBackPressed() {
+        updateNote()
+        super.onBackPressed()
     }
 }

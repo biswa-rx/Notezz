@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.notezz.NotezzApplication
 import com.example.notezz.api.NoteApiService
 import com.example.notezz.db.NoteDatabase
 import com.example.notezz.model.note_model.AccessTokenBody
@@ -57,15 +58,12 @@ class NoteRepository(
     suspend fun syncAllData() {
         try {
             if (!NetworkUtils.isInternetAvailable(applicationContext)) {
-                CustomToast.makeToast(applicationContext, "No internet")
                 return
-            }
-            if (AccessTokenManager.getAccessToken() == null) {
-                CustomToast.makeToast(
-                    applicationContext,
-                    "I have to request for access token in this portion"
-                )
-                return
+            }else {
+                if (AccessTokenManager.getAccessToken() == null) {
+                    (applicationContext as NotezzApplication).authRepository.authorizeUser()
+                    return
+                }
             }
             val response =
                 noteApiService.fetchAllNote(
@@ -90,6 +88,7 @@ class NoteRepository(
                         );
                     }
                     noteDatabase.NoteDao().addNotes(noteModelDBList)
+                    getAllNote()
                 }
             }
         } catch (e: Exception) {
@@ -100,31 +99,24 @@ class NoteRepository(
     //User welcome as Refresh Token <implimented by job sheduler>
     suspend fun syncData() {
         if (!NetworkUtils.isInternetAvailable(applicationContext)) {
-            CustomToast.makeToast(applicationContext, "No internet")
             return
         }
         if (AccessTokenManager.getAccessToken() == null) {
-            CustomToast.makeToast(
-                applicationContext,
-                "I have to request for access token in this portion"
-            )
+            (applicationContext as NotezzApplication).authRepository.authorizeUser()
             return
         }
         val noteModelDbList = noteDatabase.NoteDao().getNotes()
         for (noteModelDB in noteModelDbList) {
             if (noteModelDB.isDeleted and noteModelDB.isCreated) {
-                println(1)
                 noteDatabase.NoteDao().delete(noteModelDB)
                 continue
             } else if (noteModelDB.isDeleted and !noteModelDB.isCreated) {
-                println(2)
                 val response = noteApiService.deleteNote(
                     noteModelDB.id,
                     "Bearer " + AccessTokenManager.getAccessToken().toString()
                 )
                 noteDatabase.NoteDao().delete(noteModelDB)
             } else if (noteModelDB.isCreated) {
-                println(3)
                 val createNoteModel = CreateNoteModel(
                     AccessTokenManager.getAccessToken().toString(),
                     noteModelDB.name,
@@ -151,7 +143,6 @@ class NoteRepository(
                     }
                 }
             } else if (noteModelDB.isUpdated) {
-                println(4)
                 val updateNoteModel = UpdateNoteModel(
                     AccessTokenManager.getAccessToken().toString(),
                     noteModelDB.name,
@@ -177,10 +168,7 @@ class NoteRepository(
                         )
                     }
                 }
-
             }
-            println(5)
         }
-
     }
 }

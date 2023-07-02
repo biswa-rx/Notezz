@@ -48,7 +48,7 @@
 
                     <TextView
                         android:id="@+id/tv_search_notes"
-                        android:layout_width="180dp"
+                        android:layout_width="220dp"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:layout_marginEnd="20dp"
@@ -57,13 +57,6 @@
                         android:text="Search your notes"
                         android:layout_gravity="center_vertical" />
 
-                    <ImageView
-                        android:id="@+id/layout_manager_image"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginEnd="12dp"
-                        android:src="@drawable/ic_staged_layout"
-                        android:layout_gravity="center_vertical"/>
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/profile_image"

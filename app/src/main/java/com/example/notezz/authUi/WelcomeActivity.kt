@@ -3,6 +3,8 @@ package com.example.notezz.authUi
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -41,8 +43,10 @@ class WelcomeActivity : AppCompatActivity() {
             CustomToast.makeToast(this,it.error.message)
         })
         if(!NetworkUtils.isInternetAvailable(applicationContext)) {
-            if(AccessTokenManager.getRefreshToken() != "null"){
-                CustomToast.makeToast(this,"You are Offline\nSync failed")
+            if(AccessTokenManager.getRefreshToken() != null){
+                Handler(Looper.getMainLooper()).post(Runnable {
+                    CustomToast.makeToast(applicationContext,"You are Offline\nSync failed")
+                })
                 gotoMainActivity()
             } else {
                 CustomToast.makeToast(this,"You are Offline")

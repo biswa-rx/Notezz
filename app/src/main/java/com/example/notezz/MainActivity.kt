@@ -29,6 +29,8 @@ import com.example.notezz.callback.SwipeToDeleteCallback
 import com.example.notezz.databinding.ActivityMainBinding
 import com.example.notezz.model.note_model.NoteModelDB
 import com.example.notezz.utils.CreateVibrationEffect
+import com.example.notezz.utils.CustomToast
+import com.example.notezz.utils.NetworkUtils
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
 import com.google.android.material.navigation.NavigationView
@@ -68,13 +70,15 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             mainAdapter.submitList(applyNoteFilter(it))
         })
         swipeRefreshLayout.setOnRefreshListener {
-            noteViewModel.syncNote()
-            Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                Toast.makeText(this,"Refreshed",Toast.LENGTH_SHORT).show();
-                swipeRefreshLayout.isRefreshing = false
-            },1000)
+            if (NetworkUtils.isInternetAvailable(applicationContext)) {
+                noteViewModel.syncNote()
+            }else {
+                CustomToast.makeToast(this,"No internet\n Refresh failed")
+            }
+            swipeRefreshLayout.isRefreshing = false
         }
         initRecyclerView()
+        noteViewModel.getAllNote()
     }
 
     private fun applyNoteFilter(list:List<NoteModelDB>):List<NoteModelDB> {
@@ -116,6 +120,9 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
             R.id.item_reminder -> {
                 println("NO FUN")
             }
+            R.id.item_archive -> {
+                gotoArchiveActivity()
+            }
             else -> {
 
             }
@@ -123,10 +130,10 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         return true
     }
 
-    override fun onStart() {
-        super.onStart()
-        noteViewModel.getAllNote()
+    private fun gotoArchiveActivity() {
+        startActivity(Intent(this,ArchiveActivity::class.java))
     }
+
 
     override fun onItemClick(position: Int) {
         val note = mainAdapter.currentList.get(position)

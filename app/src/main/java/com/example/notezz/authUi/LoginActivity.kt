@@ -34,10 +34,9 @@ class LoginActivity : AppCompatActivity() {
             AuthViewModel::class.java)
 
         authViewModel.accessCode.observe(this, Observer {
-            gotoMainActivity()
-            AccessTokenManager.setAccessToken(it.ACCESS_TOKEN)
             ViewModelProvider(this, NoteViewModelFactory((application as NotezzApplication).noteRepository)).get(
                 NoteViewModel::class.java).syncAllNote()
+            gotoMainActivity()
             Log.i(TAG, it.ACCESS_TOKEN+"\n"+it.REFRESH_TOKEN)
         })
         authViewModel.errorMessage.observe(this, Observer {

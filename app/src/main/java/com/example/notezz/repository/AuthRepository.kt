@@ -12,6 +12,7 @@ import com.example.notezz.model.auth_model.LoginRequest
 import com.example.notezz.model.auth_model.AuthorizationResponse
 import com.example.notezz.model.auth_model.ErrorData
 import com.example.notezz.model.auth_model.SignupRequest
+import com.example.notezz.utils.AccessTokenManager
 import com.google.gson.Gson
 
 class AuthRepository(
@@ -40,6 +41,7 @@ class AuthRepository(
                     editor.putString("refresh-token", authorizationResponse.REFRESH_TOKEN)
                     editor.apply()
                     accessCodeLiveData.postValue(authorizationResponse!!)
+                    AccessTokenManager.setAccessToken(authorizationResponse.ACCESS_TOKEN)
                 }
             }else {
                 val gson = Gson();
@@ -62,6 +64,7 @@ class AuthRepository(
                     editor.putString("refresh-token", authorizationResponse.REFRESH_TOKEN)
                     editor.apply()
                     accessCodeLiveData.postValue(authorizationResponse!!)
+                    AccessTokenManager.setAccessToken(authorizationResponse.ACCESS_TOKEN)
                 }
             } else {
                 val gson = Gson();
@@ -91,6 +94,7 @@ class AuthRepository(
                     editor.putString("refresh-token", authorizationResponse.REFRESH_TOKEN)
                     editor.apply()
                     accessCodeLiveData.postValue(authorizationResponse!!)
+                    AccessTokenManager.setAccessToken(authorizationResponse.ACCESS_TOKEN)
                 }
             } else {
                 val gson = Gson();
