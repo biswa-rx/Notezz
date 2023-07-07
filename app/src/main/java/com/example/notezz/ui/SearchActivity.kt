@@ -1,17 +1,17 @@
-package com.example.notezz
+package com.example.notezz.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
-import com.example.notezz.databinding.ActivityMainBinding
+import com.example.notezz.R
 import com.example.notezz.databinding.ActivitySearchBinding
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_search)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_search)
 
         setSupportActionBar(binding.searchToolbar)
         supportActionBar?.apply {

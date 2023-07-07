@@ -7,11 +7,10 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.notezz.MainActivity
+import com.example.notezz.ui.MainActivity
 import com.example.notezz.NotezzApplication
 import com.example.notezz.R
 import com.example.notezz.databinding.ActivityWelcomeBinding
@@ -43,7 +42,7 @@ class WelcomeActivity : AppCompatActivity() {
             CustomToast.makeToast(this,it.error.message)
         })
         if(!NetworkUtils.isInternetAvailable(applicationContext)) {
-            if(AccessTokenManager.getRefreshToken() != null){
+            if(AccessTokenManager.getRefreshToken().isNotEmpty()){
                 Handler(Looper.getMainLooper()).post(Runnable {
                     CustomToast.makeToast(applicationContext,"You are Offline\nSync failed")
                 })
@@ -66,7 +65,7 @@ class WelcomeActivity : AppCompatActivity() {
         })
     }
     private fun gotoMainActivity() {
-        startActivity(Intent(this,MainActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 }

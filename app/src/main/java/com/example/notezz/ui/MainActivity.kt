@@ -1,4 +1,4 @@
-package com.example.notezz
+package com.example.notezz.ui
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -21,9 +21,10 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.notezz.NotezzApplication
+import com.example.notezz.R
 import com.example.notezz.adapter.MainAdapter
 import com.example.notezz.authUi.LoginActivity
-import com.example.notezz.authUi.WelcomeActivity
 import com.example.notezz.callback.ItemClickListener
 import com.example.notezz.callback.SwipeToDeleteCallback
 import com.example.notezz.databinding.ActivityMainBinding
@@ -51,7 +52,7 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     private val TAG = "MainActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         drawerLayout = binding.drawerLayout
         mainAdapter = MainAdapter(this)
         navigationView = binding.navView
@@ -59,7 +60,10 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         recyclerViewMain = binding.recyclerNote
         swipeRefreshLayout = binding.swipeRefreshLayoutMain
         setSupportActionBar(toolbar)
-        val drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        val drawerToggle = ActionBarDrawerToggle(this, drawerLayout, toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
         drawerLayout.addDrawerListener(drawerToggle)
         drawerToggle.syncState()
 
@@ -105,10 +109,10 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
 
     private fun handleOnClickEvent() {
         binding.tvSearchNotes.setOnClickListener(View.OnClickListener {
-            startActivity(Intent(this,SearchActivity::class.java))
+            startActivity(Intent(this, SearchActivity::class.java))
         })
         binding.addNoteFloatingButton.setOnClickListener {
-            val intent = Intent(this,AddNoteActivity::class.java)
+            val intent = Intent(this, AddNoteActivity::class.java)
             startActivity(intent)
         }
         binding.profileImage.setOnClickListener {
@@ -119,15 +123,15 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     private fun openProfileDialog() {
         val sharedPreferences = (application as NotezzApplication).sharedPreferences
         val inflater = LayoutInflater.from(this)
-        val view: View = inflater.inflate(com.example.notezz.R.layout.profile_layout, null)
+        val view: View = inflater.inflate(R.layout.profile_layout, null)
         val alertDialog: AlertDialog = AlertDialog.Builder(this)
             .setView(view)
             .create()
 
-        val logoutButton: Button = view.findViewById<Button>(com.example.notezz.R.id.pr_bt_logout)
-        val syncButton: Button = view.findViewById<Button>(com.example.notezz.R.id.pr_bt_sync_all)
-        val userIdTextView: TextView = view.findViewById<TextView>(com.example.notezz.R.id.tv_pr_userid)
-        val userNameTextview: TextView = view.findViewById<TextView>(com.example.notezz.R.id.tv_pr_username)
+        val logoutButton: Button = view.findViewById<Button>(R.id.pr_bt_logout)
+        val syncButton: Button = view.findViewById<Button>(R.id.pr_bt_sync_all)
+        val userIdTextView: TextView = view.findViewById<TextView>(R.id.tv_pr_userid)
+        val userNameTextview: TextView = view.findViewById<TextView>(R.id.tv_pr_username)
 
         logoutButton.setOnClickListener {
             alertDialog.dismiss()
@@ -180,14 +184,14 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     }
 
     private fun gotoArchiveActivity() {
-        startActivity(Intent(this,ArchiveActivity::class.java))
+        startActivity(Intent(this, ArchiveActivity::class.java))
     }
 
 
     override fun onItemClick(position: Int) {
         val note = mainAdapter.currentList.get(position)
 
-        val intent = Intent(this,UpdateNoteActivity::class.java)
+        val intent = Intent(this, UpdateNoteActivity::class.java)
         intent.putExtra("noteId",note.noteId)
         intent.putExtra("id",note.id)
         intent.putExtra("userId",note.userId)

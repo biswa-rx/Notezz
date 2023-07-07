@@ -11,7 +11,7 @@
         android:id="@+id/add_note_parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".AddNoteActivity">
+        tools:context=".ui.AddNoteActivity">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/add_note_toolbar"

@@ -3,10 +3,8 @@ package com.example.notezz.callback
 import android.content.Context
 import android.graphics.Canvas
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.notezz.MainActivity
 import com.example.notezz.R
 import com.example.notezz.adapter.MainAdapter
 import com.example.notezz.model.note_model.ArchiveModelDB

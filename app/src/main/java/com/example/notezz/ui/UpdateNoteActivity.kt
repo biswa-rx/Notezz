@@ -1,31 +1,36 @@
-package com.example.notezz
+package com.example.notezz.ui
 
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
+import android.text.Editable
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.notezz.NotezzApplication
+import com.example.notezz.R
 import com.example.notezz.databinding.ActivityAddNoteBinding
+import com.example.notezz.model.note_model.NoteModelDB
 import com.example.notezz.utils.CustomToast
-import com.example.notezz.viewmodels.AuthViewModel
-import com.example.notezz.viewmodels.AuthViewModelFactory
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
 
-class AddNoteActivity : AppCompatActivity() {
+class UpdateNoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddNoteBinding
     private lateinit var noteViewModel: NoteViewModel
-    private var isNoteDiscarded : Boolean = false
+    private var noteId: Int = 0
+    private var id: String = ""
+    private var userId: String = ""
+    private var noteTitle: String = ""
+    private var noteText: String = ""
+    private var noteColor: String = "#FFFFFF"
+    private var isCreated: Boolean = false
+    private var isDeletedInUi:Boolean = false
     private val TAG = "AddNoteActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_add_note)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_add_note)
         setSupportActionBar(binding.addNoteToolbar);
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -33,10 +38,26 @@ class AddNoteActivity : AppCompatActivity() {
             setHomeAsUpIndicator(R.drawable.ic_arrow_back)
         }
 
+        noteId = intent.getIntExtra("noteId",0)
+        id = intent.getStringExtra("id").toString()
+        userId = intent.getStringExtra("userId").toString()
+        noteTitle = intent.getStringExtra("noteTitle").toString()
+        noteText = intent.getStringExtra("noteText").toString()
+        noteColor = intent.getStringExtra("noteColor").toString()
+        isCreated = intent.getBooleanExtra("isCreated",false)
+        updateUi()
+
         val noteRepository = (application as NotezzApplication).noteRepository
         noteViewModel = ViewModelProvider(this, NoteViewModelFactory(noteRepository)).get(
             NoteViewModel::class.java)
 
+    }
+
+    private fun updateUi() {
+        binding.edNoteTitle.text = Editable.Factory.getInstance().newEditable(noteTitle)
+        binding.edNoteText.text = Editable.Factory.getInstance().newEditable(noteText)
+        binding.addNoteParent.setBackgroundColor(Color.parseColor(noteColor))
+        binding.addNoteToolbar.setBackgroundColor(Color.parseColor(noteColor))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -55,30 +76,26 @@ class AddNoteActivity : AppCompatActivity() {
                 onBackPressed()
             }
             R.id.item_delete -> {
-                Handler(Looper.getMainLooper()).post(Runnable {
-                    CustomToast.makeToast(this,"This note discarded")
-                })
-                isNoteDiscarded = true
+                isDeletedInUi = true
                 onBackPressed()
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        if(!isNoteDiscarded) {
-            createNote()
-        }
-    }
-
-    private fun createNote() {
+    private fun updateNote() {
         val noteTitle = binding.edNoteTitle.text.toString()
         val noteText = binding.edNoteText.text.toString()
         if(noteTitle.trim().isEmpty() and noteText.trim().isEmpty()) {
             CustomToast.makeToast(this,"Empty note discarded")
             return
         }
-        noteViewModel.createNote(noteTitle,noteText)
+        val note = NoteModelDB(noteId,id,userId,noteTitle,noteText,noteColor,isDeletedInUi,isCreated,true)
+        noteViewModel.updateNote(note)
+    }
+
+    override fun onBackPressed() {
+        updateNote()
+        super.onBackPressed()
     }
 }
