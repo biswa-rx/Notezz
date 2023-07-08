@@ -8,8 +8,9 @@ import com.example.notezz.model.note_model.NoteModelDB
 import com.example.notezz.repository.NoteRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NoteViewModel(private val noteRepository: NoteRepository) : ViewModel() {
+class NoteViewModel @Inject constructor(private val noteRepository: NoteRepository) : ViewModel() {
     val allNotes: LiveData<List<NoteModelDB>>
         get() = noteRepository.allNotes
 

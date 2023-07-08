@@ -12,29 +12,37 @@ import com.example.notezz.ui.MainActivity
 import com.example.notezz.NotezzApplication
 import com.example.notezz.R
 import com.example.notezz.databinding.ActivityLoginBinding
+import com.example.notezz.repository.AuthRepository
+import com.example.notezz.repository.NoteRepository
 import com.example.notezz.utils.AccessTokenManager
 import com.example.notezz.utils.CustomToast
 import com.example.notezz.viewmodels.AuthViewModel
 import com.example.notezz.viewmodels.AuthViewModelFactory
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
+import javax.inject.Inject
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding:ActivityLoginBinding;
     private lateinit var authViewModel: AuthViewModel;
+    @Inject
+    lateinit var authViewModelFactory: AuthViewModelFactory
+    @Inject
+    lateinit var noteViewModelFactory: NoteViewModelFactory
     private val TAG = "LoginActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_login);
 
-        val authRepository = (application as NotezzApplication).authRepository
+        (application as NotezzApplication).applicationComponent.inject(this)
 
-        authViewModel = ViewModelProvider(this, AuthViewModelFactory(authRepository)).get(
+
+        authViewModel = ViewModelProvider(this, authViewModelFactory).get(
             AuthViewModel::class.java)
 
         authViewModel.accessCode.observe(this, Observer {
             if (AccessTokenManager.getRefreshToken().toString().isNotEmpty()) {
-                ViewModelProvider(this, NoteViewModelFactory((application as NotezzApplication).noteRepository)).get(
+                ViewModelProvider(this, noteViewModelFactory).get(
                     NoteViewModel::class.java).syncAllNote()
                 gotoMainActivity()
             }

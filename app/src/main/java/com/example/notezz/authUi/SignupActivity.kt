@@ -17,21 +17,29 @@ import com.example.notezz.viewmodels.AuthViewModel
 import com.example.notezz.viewmodels.AuthViewModelFactory
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
+import javax.inject.Inject
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding;
     private lateinit var authViewModel: AuthViewModel;
+    @Inject
+    lateinit var authViewModelFactory: AuthViewModelFactory
+    @Inject
+    lateinit var noteViewModelFactory: NoteViewModelFactory
     private val TAG = "SignupActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_signup)
 
-        val authRepository = (application as NotezzApplication).authRepository
-        authViewModel = ViewModelProvider(this, AuthViewModelFactory(authRepository)).get(AuthViewModel::class.java)
+        (application as NotezzApplication).applicationComponent.inject(this)
+
+        authViewModel = ViewModelProvider(this, authViewModelFactory).get(AuthViewModel::class.java)
 
         authViewModel.accessCode.observe(this, Observer {
-            ViewModelProvider(this, NoteViewModelFactory((application as NotezzApplication).noteRepository)).get(
+
+            ViewModelProvider(this, noteViewModelFactory).get(
                 NoteViewModel::class.java).syncAllNote()
+
             gotoMainActivity()
             Log.i(TAG, it.ACCESS_TOKEN+"\n"+it.REFRESH_TOKEN)
         })

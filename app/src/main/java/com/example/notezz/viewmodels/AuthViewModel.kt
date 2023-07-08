@@ -8,8 +8,9 @@ import com.example.notezz.model.auth_model.AuthorizationResponse
 import com.example.notezz.repository.AuthRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
+class AuthViewModel @Inject constructor(private val authRepository: AuthRepository) : ViewModel() {
     companion object{
         var verifiedSession = false;
     }

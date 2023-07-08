@@ -1,14 +1,13 @@
 package com.example.notezz.api
 
+import com.example.notezz.utils.Constants
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitHelper {
-    private const val BASE_URL = "http://192.168.204.137:3000/"
-//    private const val BASE_URL = "http://192.168.1.37:3000/"  //for my router setup
     fun getInstance() : Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(Constants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

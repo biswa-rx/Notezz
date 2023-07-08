@@ -15,6 +15,7 @@ import com.example.notezz.model.note_model.ArchiveModelDB
 import com.example.notezz.utils.CustomToast
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
+import javax.inject.Inject
 
 class UpdateArchiveNote : AppCompatActivity() {
     private lateinit var binding: ActivityAddNoteBinding
@@ -24,10 +25,15 @@ class UpdateArchiveNote : AppCompatActivity() {
     private var noteText: String = ""
     private var noteColor: String = "#FFFFFF"
     private var isDeletedInUi: Boolean = false
+    @Inject
+    lateinit var noteViewModelFactory: NoteViewModelFactory
     private val TAG = "AddNoteActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_note)
+
+        (application as NotezzApplication).applicationComponent.inject(this)
+
         setSupportActionBar(binding.addNoteToolbar);
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -41,8 +47,7 @@ class UpdateArchiveNote : AppCompatActivity() {
         noteColor = intent.getStringExtra("noteColor").toString()
         updateUi()
 
-        val noteRepository = (application as NotezzApplication).noteRepository
-        noteViewModel = ViewModelProvider(this, NoteViewModelFactory(noteRepository)).get(
+        noteViewModel = ViewModelProvider(this, noteViewModelFactory).get(
             NoteViewModel::class.java)
 
     }

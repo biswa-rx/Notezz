@@ -2,6 +2,7 @@ package com.example.notezz.ui
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -38,6 +39,7 @@ import com.example.notezz.viewmodels.AuthViewModelFactory
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
 import com.google.android.material.navigation.NavigationView
+import javax.inject.Inject
 
 
 class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelectedListener,ItemClickListener {
@@ -49,10 +51,20 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     private lateinit var noteViewModel: NoteViewModel
     private lateinit var mainAdapter: MainAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    @Inject
+    lateinit var noteViewModelFactory: NoteViewModelFactory
+    @Inject
+    lateinit var authViewModelFactory: AuthViewModelFactory
+    @Inject
+    lateinit var sharedPreferences: SharedPreferences
+
     private val TAG = "MainActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+
+        (application as NotezzApplication).applicationComponent.inject(this)
+
         drawerLayout = binding.drawerLayout
         mainAdapter = MainAdapter(this)
         navigationView = binding.navView
@@ -72,8 +84,7 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
 
         handleOnClickEvent()
 
-        val noteRepository = (application as NotezzApplication).noteRepository
-        noteViewModel = ViewModelProvider(this, NoteViewModelFactory(noteRepository)).get(
+        noteViewModel = ViewModelProvider(this, noteViewModelFactory).get(
             NoteViewModel::class.java)
         noteViewModel.allNotes.observe(this, Observer {
             mainAdapter.submitList(applyNoteFilter(it))
@@ -121,7 +132,6 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
     }
 
     private fun openProfileDialog() {
-        val sharedPreferences = (application as NotezzApplication).sharedPreferences
         val inflater = LayoutInflater.from(this)
         val view: View = inflater.inflate(R.layout.profile_layout, null)
         val alertDialog: AlertDialog = AlertDialog.Builder(this)
@@ -136,7 +146,7 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         logoutButton.setOnClickListener {
             alertDialog.dismiss()
             noteViewModel.syncNote()
-            ViewModelProvider(this, AuthViewModelFactory((application as NotezzApplication).authRepository)).get(
+            ViewModelProvider(this, authViewModelFactory).get(
                 AuthViewModel::class.java).logout()
             Handler(Looper.getMainLooper()).postDelayed(Runnable {
                 gotoLoginActivity()
@@ -209,5 +219,6 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
 
     override fun onRestart() {
         super.onRestart()
+        noteViewModel.getAllNote()
     }
 }

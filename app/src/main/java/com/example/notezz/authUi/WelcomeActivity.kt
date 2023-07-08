@@ -19,18 +19,22 @@ import com.example.notezz.utils.CustomToast
 import com.example.notezz.utils.NetworkUtils
 import com.example.notezz.viewmodels.AuthViewModel
 import com.example.notezz.viewmodels.AuthViewModelFactory
+import javax.inject.Inject
 
 class WelcomeActivity : AppCompatActivity() {
     private lateinit var binding:ActivityWelcomeBinding;
     private lateinit var authViewModel: AuthViewModel;
+    @Inject
+    lateinit var authViewModelFactory: AuthViewModelFactory
     private val TAG = "WelcomeActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_welcome)
 
-        val authRepository = (application as NotezzApplication).authRepository
+        (application as NotezzApplication).applicationComponent.inject(this)
 
-        authViewModel = ViewModelProvider(this, AuthViewModelFactory(authRepository)).get(
+
+        authViewModel = ViewModelProvider(this, authViewModelFactory).get(
             AuthViewModel::class.java)
 
         authViewModel.accessCode.observe(this, Observer {

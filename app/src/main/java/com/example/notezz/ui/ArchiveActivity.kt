@@ -18,15 +18,21 @@ import com.example.notezz.databinding.ActivityArchiveBinding
 import com.example.notezz.model.note_model.ArchiveModelDB
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
+import javax.inject.Inject
 
 class ArchiveActivity : AppCompatActivity(),ArchiveItemClickListener {
     lateinit var binding: ActivityArchiveBinding
     private lateinit var noteViewModel: NoteViewModel
     private lateinit var recyclerViewArchive:RecyclerView
     private lateinit var archiveAdapter: ArchiveAdapter
+    @Inject
+    lateinit var noteViewModelFactory: NoteViewModelFactory
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_archive)
+
+        (application as NotezzApplication).applicationComponent.inject(this)
+
         recyclerViewArchive = binding.archiveRecyclerview
         archiveAdapter = ArchiveAdapter(this)
         setSupportActionBar(binding.archiveToolbar)
@@ -38,8 +44,7 @@ class ArchiveActivity : AppCompatActivity(),ArchiveItemClickListener {
         binding.archiveToolbar.setNavigationOnClickListener {
             onBackPressed()
         }
-        val noteRepository = (application as NotezzApplication).noteRepository
-        noteViewModel = ViewModelProvider(this, NoteViewModelFactory(noteRepository)).get(
+        noteViewModel = ViewModelProvider(this, noteViewModelFactory).get(
             NoteViewModel::class.java)
         noteViewModel.allArchiveNotes.observe(this, Observer {
             archiveAdapter.submitList(applyNoteFilter(it))

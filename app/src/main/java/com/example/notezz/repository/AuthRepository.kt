@@ -18,8 +18,9 @@ import com.example.notezz.model.auth_model.SignupRequest
 import com.example.notezz.utils.AccessTokenManager
 import com.example.notezz.utils.CustomToast
 import com.google.gson.Gson
+import javax.inject.Inject
 
-class AuthRepository(
+class AuthRepository @Inject constructor(
     private val authApiService: AuthApiService,
     private val sharedPreferences: SharedPreferences,
     private val applicationContext: Context) {

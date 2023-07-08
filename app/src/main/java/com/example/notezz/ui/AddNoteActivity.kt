@@ -14,14 +14,20 @@ import com.example.notezz.databinding.ActivityAddNoteBinding
 import com.example.notezz.utils.CustomToast
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
+import javax.inject.Inject
 
 class AddNoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddNoteBinding
     private lateinit var noteViewModel: NoteViewModel
     private var isNoteDiscarded : Boolean = false
+    @Inject
+    lateinit var noteViewModelFactory: NoteViewModelFactory
     private val TAG = "AddNoteActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        (application as NotezzApplication).applicationComponent.inject(this)
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_add_note)
         setSupportActionBar(binding.addNoteToolbar);
         supportActionBar?.apply {
@@ -30,8 +36,7 @@ class AddNoteActivity : AppCompatActivity() {
             setHomeAsUpIndicator(R.drawable.ic_arrow_back)
         }
 
-        val noteRepository = (application as NotezzApplication).noteRepository
-        noteViewModel = ViewModelProvider(this, NoteViewModelFactory(noteRepository)).get(
+        noteViewModel = ViewModelProvider(this, noteViewModelFactory).get(
             NoteViewModel::class.java)
 
     }

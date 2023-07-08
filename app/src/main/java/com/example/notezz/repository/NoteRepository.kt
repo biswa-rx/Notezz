@@ -18,10 +18,12 @@ import com.example.notezz.utils.AccessTokenManager
 import com.example.notezz.utils.CustomToast
 import com.example.notezz.utils.NetworkUtils
 import java.util.logging.Handler
+import javax.inject.Inject
 
-class NoteRepository(
+class NoteRepository @Inject constructor(
     private val noteApiService: NoteApiService,
     private val noteDatabase: NoteDatabase,
+    private val authRepository: AuthRepository,
     private val applicationContext: Context
 ) {
 
@@ -67,7 +69,7 @@ class NoteRepository(
                 return
             }else {
                 if (AccessTokenManager.getAccessToken().isEmpty()) {
-                    (applicationContext as NotezzApplication).authRepository.authorizeUser()
+                    authRepository.authorizeUser()
                 }
             }
             val response =
@@ -107,7 +109,7 @@ class NoteRepository(
             return
         }
         if (AccessTokenManager.getAccessToken().isEmpty()) {
-            (applicationContext as NotezzApplication).authRepository.authorizeUser()
+              authRepository.authorizeUser()
         }
         val noteModelDbList = noteDatabase.NoteDao().getNotes()
         for (noteModelDB in noteModelDbList) {
