@@ -7,6 +7,7 @@ import com.example.notezz.model.note_model.ArchiveModelDB
 import com.example.notezz.model.note_model.NoteModelDB
 import com.example.notezz.repository.NoteRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -62,6 +63,7 @@ class NoteViewModel @Inject constructor(private val noteRepository: NoteReposito
     fun hybridSync(){
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.syncData()
+            delay(300)
             noteRepository.syncAllData()
         }
     }

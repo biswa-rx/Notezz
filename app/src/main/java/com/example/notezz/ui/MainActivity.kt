@@ -22,6 +22,10 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.example.notezz.NotezzApplication
 import com.example.notezz.R
 import com.example.notezz.adapter.MainAdapter
@@ -38,7 +42,9 @@ import com.example.notezz.viewmodels.AuthViewModel
 import com.example.notezz.viewmodels.AuthViewModelFactory
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
+import com.example.notezz.worker.SyncWorker
 import com.google.android.material.navigation.NavigationView
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -91,7 +97,7 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         })
         swipeRefreshLayout.setOnRefreshListener {
             if (NetworkUtils.isInternetAvailable(applicationContext)) {
-                noteViewModel.hybridSync()
+               scheduleSyncWork()
             }else {
                 CustomToast.makeToast(this,"No internet\n Refresh failed")
             }
@@ -99,6 +105,20 @@ class MainActivity : AppCompatActivity(),NavigationView.OnNavigationItemSelected
         }
         initRecyclerView()
         noteViewModel.getAllNote()
+    }
+
+    private fun scheduleSyncWork() {
+        val constraints: Constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED) // Network constraint (optional)
+//                    .setRequiresCharging(true) // Charging constraint (optional)
+//                    .setRequiresDeviceIdle(true) // Idle constraint (optional)
+            .build()
+        val syncWorkRequest = OneTimeWorkRequest.Builder(SyncWorker::class.java)
+            .setInitialDelay(2, TimeUnit.SECONDS) // Delay before the work starts (optional)
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(this).enqueue(syncWorkRequest)
     }
 
     private fun applyNoteFilter(list:List<NoteModelDB>):List<NoteModelDB> {
