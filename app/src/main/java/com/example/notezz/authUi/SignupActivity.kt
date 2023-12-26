@@ -58,6 +58,12 @@ class SignupActivity : AppCompatActivity() {
             var password = binding.etUserPassword.text.toString()
             authViewModel.resister(name,email,password);
         })
+
+        //For testing purposes we bypass the security with directly login through click on Create Account TextView
+        //This login method can't interact with server due to no verified access token
+        binding.createAccountTv.setOnClickListener {
+            gotoMainActivity();
+        }
     }
     private fun gotoLoginActivity(){
         startActivity(Intent(this,LoginActivity::class.java))
