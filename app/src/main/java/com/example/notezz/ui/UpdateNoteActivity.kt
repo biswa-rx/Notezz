@@ -13,8 +13,10 @@ import com.example.notezz.R
 import com.example.notezz.databinding.ActivityAddNoteBinding
 import com.example.notezz.model.note_model.NoteModelDB
 import com.example.notezz.utils.CustomToast
+import com.example.notezz.utils.convertColorToHexString
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
+import yuku.ambilwarna.AmbilWarnaDialog
 import javax.inject.Inject
 
 class UpdateNoteActivity : AppCompatActivity() {
@@ -84,6 +86,9 @@ class UpdateNoteActivity : AppCompatActivity() {
                 isDeletedInUi = true
                 onBackPressed()
             }
+            R.id.item_color -> {
+                openColorPicker()
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -102,5 +107,19 @@ class UpdateNoteActivity : AppCompatActivity() {
     override fun onBackPressed() {
         updateNote()
         super.onBackPressed()
+    }
+
+    fun openColorPicker() {
+        val colorPicker = AmbilWarnaDialog(this, Color.RED,true, object : AmbilWarnaDialog.OnAmbilWarnaListener {
+            override fun onCancel(dialog: AmbilWarnaDialog) {
+
+            }
+
+            override fun onOk(dialog: AmbilWarnaDialog, color: Int) {
+                noteColor = convertColorToHexString(color)
+                updateUi()
+            }
+        })
+        colorPicker.show()
     }
 }

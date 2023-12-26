@@ -7,5 +7,6 @@ data class NoteResponse(
     val id: String,
     val userId: String,
     val name: String,
-    val text: String
+    val text: String,
+    val color: String
     )

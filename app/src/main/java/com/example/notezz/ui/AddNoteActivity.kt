@@ -1,20 +1,25 @@
 package com.example.notezz.ui
 
-import androidx.appcompat.app.AppCompatActivity
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.example.notezz.NotezzApplication
 import com.example.notezz.R
 import com.example.notezz.databinding.ActivityAddNoteBinding
 import com.example.notezz.utils.CustomToast
+import com.example.notezz.utils.convertColorToHexString
 import com.example.notezz.viewmodels.NoteViewModel
 import com.example.notezz.viewmodels.NoteViewModelFactory
+import yuku.ambilwarna.AmbilWarnaDialog
+import yuku.ambilwarna.AmbilWarnaDialog.OnAmbilWarnaListener
 import javax.inject.Inject
+
 
 class AddNoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddNoteBinding
@@ -22,6 +27,7 @@ class AddNoteActivity : AppCompatActivity() {
     private var isNoteDiscarded : Boolean = false
     @Inject
     lateinit var noteViewModelFactory: NoteViewModelFactory
+    private var noteColor: String = "#FFFFFF"
     private val TAG = "AddNoteActivity"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +69,9 @@ class AddNoteActivity : AppCompatActivity() {
                 isNoteDiscarded = true
                 onBackPressed()
             }
+            R.id.item_color -> {
+                openColorPicker()
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -81,6 +90,21 @@ class AddNoteActivity : AppCompatActivity() {
             CustomToast.makeToast(this,"Empty note discarded")
             return
         }
-        noteViewModel.createNote(noteTitle,noteText)
+        noteViewModel.createNote(noteTitle,noteText,noteColor)
+    }
+
+    fun openColorPicker() {
+        val colorPicker = AmbilWarnaDialog(this, Color.RED,true, object : OnAmbilWarnaListener {
+            override fun onCancel(dialog: AmbilWarnaDialog) {
+
+            }
+
+            override fun onOk(dialog: AmbilWarnaDialog, color: Int) {
+                noteColor = convertColorToHexString(color)
+                binding.addNoteParent.setBackgroundColor(Color.parseColor(noteColor))
+                binding.addNoteToolbar.setBackgroundColor(Color.parseColor(noteColor))
+            }
+        })
+        colorPicker.show()
     }
 }

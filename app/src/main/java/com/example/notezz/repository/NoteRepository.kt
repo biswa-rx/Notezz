@@ -88,7 +88,7 @@ class NoteRepository @Inject constructor(
                             it.userId,
                             it.name,
                             it.text,
-                            "#FFFFFF",
+                            it.color,
                             false,
                             false,
                             false
@@ -126,7 +126,8 @@ class NoteRepository @Inject constructor(
                 val createNoteModel = CreateNoteModel(
                     AccessTokenManager.getAccessToken().toString(),
                     noteModelDB.name,
-                    noteModelDB.text
+                    noteModelDB.text,
+                    noteModelDB.color
                 )
                 val response = noteApiService.createNewNote(createNoteModel)
                 if (response.isSuccessful) {
@@ -140,7 +141,7 @@ class NoteRepository @Inject constructor(
                                 noteResponse.userId,
                                 noteResponse.name,
                                 noteResponse.text,
-                                "#FFFFFF",
+                                noteResponse.color,
                                 false,
                                 false,
                                 false
@@ -152,7 +153,8 @@ class NoteRepository @Inject constructor(
                 val updateNoteModel = UpdateNoteModel(
                     AccessTokenManager.getAccessToken().toString(),
                     noteModelDB.name,
-                    noteModelDB.text
+                    noteModelDB.text,
+                    noteModelDB.color
                 )
                 val updateResponse = noteApiService.updateNote(noteModelDB.id, updateNoteModel)
                 if (updateResponse.isSuccessful) {
@@ -166,7 +168,7 @@ class NoteRepository @Inject constructor(
                                 noteResponse.userId,
                                 noteResponse.name,
                                 noteResponse.text,
-                                "#FFFFFF",
+                                noteResponse.color,
                                 false,
                                 false,
                                 false
