@@ -45,6 +45,12 @@ class WelcomeActivity : AppCompatActivity() {
         authViewModel.errorMessage.observe(this, Observer {
             CustomToast.makeToast(this,it.error.message)
         })
+
+        initOnClickEvent()
+    }
+
+    override fun onStart() {
+        super.onStart()
         if(!NetworkUtils.isInternetAvailable(applicationContext)) {
             if(AccessTokenManager.getRefreshToken().isNotEmpty()){
                 Handler(Looper.getMainLooper()).post(Runnable {
@@ -55,7 +61,6 @@ class WelcomeActivity : AppCompatActivity() {
                 CustomToast.makeToast(this,"You are Offline")
             }
         }
-        initOnClickEvent()
     }
 
     private fun initOnClickEvent() {

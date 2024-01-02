@@ -33,6 +33,13 @@ class AuthRepository @Inject constructor(
     val errorMessage: LiveData<ErrorResponse>
     get() = _errorMessage
 
+    init {
+        val refreshToken = sharedPreferences.getString("refresh-token",null);
+        if (refreshToken != null) {
+            AccessTokenManager.setRefreshToken(refreshToken)
+        }
+    }
+
 
     suspend fun resisterUser(name: String, email: String, password: String) {
         try {
